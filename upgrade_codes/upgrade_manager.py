@@ -1,5 +1,4 @@
 from loguru import logger
-from upgrade_codes.upgrade_core.language import select_language
 from upgrade_codes.config_sync import ConfigSynchronizer
 from upgrade_codes.upgrade_core.upgrade_utils import UpgradeUtility
 import os
@@ -10,7 +9,7 @@ from upgrade_codes.upgrade_core.constants import USER_CONF, TEXTS
 
 class UpgradeManager:
     def __init__(self):
-        self.lang = select_language()
+        self.lang = "en"
         self._configure_logger()
         self.logger = logger
         self.upgrade_utils = UpgradeUtility(self.logger, self.lang)
