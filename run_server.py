@@ -47,11 +47,15 @@ def init_logger(console_log_level: str = "INFO") -> None:
     )
 
 
-def check_frontend_submodule(lang=None):
+def check_frontend_submodule(lang: str | None = None, server_only: bool = False):
     """
     Check if the frontend submodule is initialized. If not, attempt to initialize it.
     If initialization fails, log an error message.
     """
+    if server_only:
+        logger.info("Running in server_only mode")
+        return
+
     if lang is None:
         lang = upgrade_manager.lang
 
