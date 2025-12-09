@@ -1,6 +1,5 @@
 # upgrade/comment_sync.py
 from typing import Dict
-from logging import Logger
 from ruamel.yaml import YAML
 from ruamel.yaml.comments import CommentedMap
 
@@ -10,7 +9,7 @@ class CommentSynchronizer:
         self,
         default_path: str,
         user_path: str,
-        logger: Logger,
+        logger,
         yaml: YAML,
         texts_compare: Dict[str, str],
     ):

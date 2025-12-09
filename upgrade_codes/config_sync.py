@@ -1,15 +1,6 @@
 import os
 import shutil
-from upgrade_codes.upgrade_core.constants import (
-    USER_CONF,
-    BACKUP_CONF,
-    TEXTS,
-    ZH_DEFAULT_CONF,
-    EN_DEFAULT_CONF,
-    TEXTS_COMPARE,
-    TEXTS_MERGE,
-)
-import logging
+from loguru import logger
 from ruamel.yaml import YAML
 from src.open_llm_vtuber.config_manager.utils import load_text_file_with_guess_encoding
 from upgrade_codes.upgrade_core.comment_sync import CommentSynchronizer
@@ -17,13 +8,21 @@ from upgrade_codes.version_manager import VersionUpgradeManager
 from upgrade_codes.upgrade_core.upgrade_utils import UpgradeUtility
 from upgrade_codes.upgrade_core.comment_diff_fn import comment_diff_fn
 from packaging import version
+from upgrade_codes.upgrade_core.constants import (
+    USER_CONF,
+    BACKUP_CONF,
+    TEXTS,
+    EN_DEFAULT_CONF,
+    TEXTS_COMPARE,
+    TEXTS_MERGE,
+)
 
 
 class ConfigSynchronizer:
-    def __init__(self, lang="en", logger=logging.getLogger(__name__)):
+    def __init__(self, lang="en", logger=logger):
         self.lang = lang
         self.texts = TEXTS[lang]
-        self.default_path = ZH_DEFAULT_CONF if lang == "zh" else EN_DEFAULT_CONF
+        self.default_path = EN_DEFAULT_CONF
         self.yaml = YAML()
         self.yaml.preserve_quotes = True
         self.user_path = USER_CONF
