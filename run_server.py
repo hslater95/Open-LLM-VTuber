@@ -9,7 +9,7 @@ import tomli
 import uvicorn
 from loguru import logger
 from upgrade_codes.upgrade_manager import UpgradeManager
-
+from dotenv import load_dotenv
 from src.open_llm_vtuber.server import WebSocketServer
 from src.open_llm_vtuber.config_manager import Config, read_yaml, validate_config
 
@@ -17,6 +17,10 @@ os.environ["HF_HOME"] = str(Path(__file__).parent / "models")
 os.environ["MODELSCOPE_CACHE"] = str(Path(__file__).parent / "models")
 
 upgrade_manager = UpgradeManager()
+
+load_dotenv()
+
+server_only: bool = True if os.getenv("SERVER_ONLY") == "true" else False
 
 
 def get_version() -> str:
@@ -121,15 +125,15 @@ def parse_args():
 
 
 @logger.catch
-def run(console_log_level: str):
+def run(console_log_level: str, server_only: bool):
     init_logger(console_log_level)
-    logger.info(f"Open-LLM-VTuber, version v{get_version()}")
+    logger.info(f"VTuber, version v{get_version()}")
 
     # Get selected language
     lang = upgrade_manager.lang
 
     # Check if the frontend submodule is initialized
-    check_frontend_submodule(lang)
+    check_frontend_submodule(lang, server_only=server_only)
 
     # Sync user config with default config
     try:
@@ -142,6 +146,10 @@ def run(console_log_level: str):
     # Load configurations from yaml file
     config: Config = validate_config(read_yaml("conf.yaml"))
     server_config = config.system_config
+
+    if not server_config:
+        logger.error("Failed to initialize server config")
+        sys.exit(1)
 
     if server_config.enable_proxy:
         logger.info("Proxy mode enabled - /proxy-ws endpoint will be available")
@@ -179,4 +187,4 @@ if __name__ == "__main__":
         )
     if args.hf_mirror:
         os.environ["HF_ENDPOINT"] = "https://hf-mirror.com"
-    run(console_log_level=console_log_level)
+    run(console_log_level=console_log_level, server_only=server_only)
