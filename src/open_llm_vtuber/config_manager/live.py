@@ -23,10 +23,6 @@ class BiliBiliLiveConfig(I18nMixin):
 class LiveConfig(I18nMixin):
     """Configuration for live streaming platforms integration."""
 
-    bilibili_live: BiliBiliLiveConfig = Field(
-        BiliBiliLiveConfig(), alias="bilibili_live"
-    )
-
     DESCRIPTIONS: ClassVar[Dict[str, Description]] = {
         "bilibili_live": Description(
             en="Configuration for BiliBili Live platform", zh="B站直播平台配置"
