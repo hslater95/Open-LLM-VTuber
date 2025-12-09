@@ -8,6 +8,7 @@ It uses FastAPI for the server and Starlette for static file serving.
 
 import os
 import shutil
+from venv import logger
 
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
@@ -71,8 +72,10 @@ class WebSocketServer:
         - Use `clean_cache()` to clear and recreate the local cache directory.
     """
 
-    def __init__(self, config: Config, default_context_cache: ServiceContext = None):
-        self.app = FastAPI(title="Open-LLM-VTuber Server")  # Added title for clarity
+    def __init__(
+        self, config: Config, default_context_cache: ServiceContext | None = None
+    ):
+        self.app = FastAPI(title="VTuber Server")  # Added title for clarity
         self.config = config
         self.default_context_cache = (
             default_context_cache or ServiceContext()
@@ -99,6 +102,9 @@ class WebSocketServer:
 
         # Initialize and include proxy routes if proxy is enabled
         system_config = config.system_config
+        if not system_config:
+            logger.error("Error initializing server config")
+            return
         if hasattr(system_config, "enable_proxy") and system_config.enable_proxy:
             # Construct the server URL for the proxy
             host = system_config.host
@@ -150,7 +156,8 @@ class WebSocketServer:
 
     async def initialize(self):
         """Asynchronously load the service context from config.
-        Calling this function is needed if default_context_cache was not provided to the constructor."""
+        Calling this function is needed if default_context_cache was not provided to the constructor.
+        """
         await self.default_context_cache.load_from_config(self.config)
 
     @staticmethod
